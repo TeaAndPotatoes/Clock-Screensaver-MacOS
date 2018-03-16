@@ -10,4 +10,6 @@
 
 @interface Minimalist_ClockView : ScreenSaverView
 
++ (CGSize)findHeightForText:(NSString *)text havingWidth:(CGFloat)widthValue andFont:(NSFont *)font;
+
 @end
