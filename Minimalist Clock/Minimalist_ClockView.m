@@ -10,11 +10,31 @@
 
 @implementation Minimalist_ClockView
 
+static NSDictionary* attr;
+static NSRect textBox;
+
++ (void) initialize
+{
+    NSFont* clockFont = [NSFont fontWithName:@"HelveticaNeue-Light" size:170];
+    NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    style.alignment = NSTextAlignmentCenter;
+    style.lineBreakMode = NSLineBreakByClipping;
+    attr = @{
+            NSForegroundColorAttributeName: NSColor.whiteColor,
+            NSParagraphStyleAttributeName: style,
+            NSFontAttributeName: clockFont
+            };
+}
+
 - (instancetype)initWithFrame:(NSRect)frame isPreview:(BOOL)isPreview
 {
     self = [super initWithFrame:frame isPreview:isPreview];
     if (self) {
         [self setAnimationTimeInterval:1/30.0];
+        NSString *nullStr = @"NULL STRING";
+        CGSize textSize = [nullStr sizeWithAttributes:attr];
+        textBox = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width,
+                             (frame.size.height + textSize.height) / 2);
     }
     return self;
 }
@@ -34,34 +54,22 @@
     [super drawRect:rect];
     [[NSColor blackColor] setFill];
     NSRectFill(self.bounds);
-    
-    NSString *helloStr = @"Hello screen saver plugin";
-    NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-    style.alignment = NSTextAlignmentCenter;
-    style.lineBreakMode = NSLineBreakByClipping;
-    
-    NSFont *clockFont = [NSFont fontWithName:@"Helvetica" size:60];
-    NSDictionary *attr = @{
-                           NSForegroundColorAttributeName: NSColor.whiteColor,
-                           NSParagraphStyleAttributeName: style,
-                           NSFontAttributeName: clockFont
-                           };
-    CGSize textSize = [helloStr sizeWithAttributes:attr];
-    CGSize size = self.bounds.size;
-    CGPoint origin = self.bounds.origin;
-    
-    CGRect r = CGRectMake(origin.x,
-                          origin.y + (textSize.height) / 2,
-                          size.width,
-                          (size.height + textSize.height) / 2);
-    [helloStr drawInRect:r withAttributes:attr];
-    
-    [helloStr drawInRect:r withAttributes:attr];
 }
 
 - (void)animateOneFrame
 {
-    return;
+    // Clear the screen
+    [[NSColor blackColor] setFill];
+    NSRectFill(textBox);
+    
+    // Find the date and add it to a string
+    NSDate* now = [NSDate date];
+    NSDateFormatter* outputFormatter = [[NSDateFormatter alloc] init];
+    [outputFormatter setDateFormat:@"hh:mm:ss a"];
+    NSString* newDateString = [outputFormatter stringFromDate:now];
+    
+    // Draw the string within the text box
+    [newDateString drawInRect:textBox withAttributes:attr];
 }
 
 - (BOOL)hasConfigureSheet
@@ -72,16 +80,6 @@
 - (NSWindow*)configureSheet
 {
     return nil;
-}
-
-+ (CGSize)findHeightForText:(NSString *)text havingWidth:(CGFloat)widthValue andFont:(NSFont *)font {
-    CGSize size = CGSizeZero;
-    if (text) {
-        //iOS 7
-        CGRect frame = [text boundingRectWithSize:CGSizeMake(widthValue, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{ NSFontAttributeName:font } context:nil];
-        size = CGSizeMake(frame.size.width, frame.size.height + 1);
-    }
-    return size;
 }
 
 @end
