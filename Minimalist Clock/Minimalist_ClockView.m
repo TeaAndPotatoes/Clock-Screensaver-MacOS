@@ -10,7 +10,6 @@
 
 @implementation Minimalist_ClockView
 
-NSTextField *timeField;
 static NSDictionary* attr;
 static NSRect textBox;
 static bool withSeconds = true;
@@ -20,6 +19,12 @@ static bool amPMEnabled = true;
 {
     self = [super initWithFrame:frame isPreview:isPreview];
     if (self) {
+        if(withSeconds) {
+            [self setAnimationTimeInterval:1/30.0];
+        }
+        else {
+            [self setAnimationTimeInterval:30.0];
+        }
         [self setAnimationTimeInterval:1/30.0];
         NSFont* clockFont = [NSFont fontWithName:@"HelveticaNeue-Light" size:170];
         NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -34,14 +39,6 @@ static bool amPMEnabled = true;
         CGSize textSize = [nullStr sizeWithAttributes:attr];
         textBox = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width,
                              (frame.size.height + textSize.height) / 2);
-//        timeField = [[NSTextField alloc] initWithFrame:textBox];
-//        timeField.bordered = YES;
-//        timeField.selectable = NO;
-//        timeField.backgroundColor = [NSColor clearColor];
-//        timeField.textColor = [NSColor whiteColor];
-//        NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:@"ASDASD" attributes:attr];
-//
-//        [self addSubview:timeField];
     }
     return self;
 }
