@@ -12,7 +12,7 @@
 
 static NSDictionary* attr;
 static NSRect textBox;
-static bool withSeconds = true;
+static bool withSeconds = false;
 static bool amPMEnabled = true;
 
 - (instancetype)initWithFrame:(NSRect)frame isPreview:(BOOL)isPreview
@@ -25,8 +25,7 @@ static bool amPMEnabled = true;
         else {
             [self setAnimationTimeInterval:30.0];
         }
-        [self setAnimationTimeInterval:1/30.0];
-        NSFont* clockFont = [NSFont fontWithName:@"HelveticaNeue-Light" size:170];
+        NSFont* clockFont = [NSFont fontWithName:@"GillSans-Light" size:190];
         NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
         style.alignment = NSTextAlignmentCenter;
         style.lineBreakMode = NSLineBreakByClipping;
@@ -37,8 +36,9 @@ static bool amPMEnabled = true;
                  };
         NSString *nullStr = @"NULL STRING";
         CGSize textSize = [nullStr sizeWithAttributes:attr];
-        textBox = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width,
-                             (frame.size.height + textSize.height) / 2);
+        textBox = CGRectMake(frame.origin.x, frame.origin.y + ((frame.size.height - textSize.height) / 2.0), frame.size.width,
+                             textSize.height + 25);
+//                             (frame.size.height + textSize.height) / 2);
     }
     return self;
 }
@@ -79,6 +79,8 @@ static bool amPMEnabled = true;
     }
     if(amPMEnabled) {
         dateFormatString = [dateFormatString stringByAppendingString:@" a"];
+    } else {
+         dateFormatString = [dateFormatString stringByReplacingOccurrencesOfString:@"hh" withString:@"HH"];
     }
     
     // Create string based on formatter string
